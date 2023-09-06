@@ -1,0 +1,28 @@
+volumes:
+  app-vol:
+
+networks:
+  app-net:
+
+services:
+  app-node:
+    depends_on:
+      - postgres-app
+      - nginx-app
+    build: .
+    ports:
+      - 3000:3000
+    networks:
+      - app-net
+  nginx-app:
+    image: nginx:latest
+    ports:
+      - 80:80
+    networks:
+      - app-net
+  postgres-app:
+    image: postgres:latest
+    volumes:
+      - app-vol:/val/lib/postgresql/data
+    networks:
+      - app-net
