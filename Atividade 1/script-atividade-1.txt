@@ -1,0 +1,68 @@
+Exercício 1:
+  - docker pull ubuntu
+  - docker run -it ubuntu bash
+    - root@f3215831f78a:/# apt update
+    - root@f3215831f78a:/# apt install curl
+    - root@f3215831f78a:/# curl --version
+      - curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 OpenSSL/3.0.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.2 libpsl/0.21.0 (+libidn2/2.3.2) libssh/0.9.6/openssl/zlib 
+        nghttp2/1.43.0 librtmp/2.3 OpenLDAP/2.5 16
+        Release-Date: 2022-01-05
+        Protocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp
+        Features: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM NTLM_WB PSL SPNEGO SSL TLS-SRP UnixSockets zstd
+
+Exercício 2:
+  - docker pull node
+  - (Copia o código https://nodejs.org/en/docs/guides/getting-started-guide)
+  - npm init -y
+  - npm install express --save
+
+  Dockerfile:
+  {
+    FROM node:18-alpine
+    WORKDIR /app
+
+    COPY . .
+    EXPOSE 3000
+
+    COPY package*.json ./
+
+    ENTRYPOINT start npm
+  }
+
+  - docker build -t node-example-app .
+  - docker run -d -p 3000:3000 node-example-app
+
+Exercício 3:
+  docker-compose.yaml
+  {
+    volumes:
+      app-vol:
+
+    networks:
+      app-net:
+
+    services:
+      app-node:
+        depends_on:
+          - postgres-app
+          - nginx-app
+        build: .
+        ports:
+          - 3000:3000
+        networks:
+          - app-net
+      nginx-app:
+        image: nginx:latest
+        ports:
+          - 80:80
+        networks:
+          - app-net
+      postgres-app:
+        image: postgres:latest
+        volumes:
+          - app-vol:/val/lib/postgresql/data
+        networks:
+          - app-net
+  }
+
+  
